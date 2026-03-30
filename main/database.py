@@ -1,3 +1,31 @@
+"""
+TAXMAN Database — proposition store.
+
+Every fact in TAXMAN is a parenthesized list: (PREDICATE ARG1 ARG2 ...).
+Here that becomes a Python tuple stored under the predicate key.
+
+Adding a proposition makes it "true". Removing it makes it "false".
+There is no third state: truth equals presence in the DB.
+
+Time is handled by appending a time token as the last argument:
+
+    OWN(PHELLIS, P1, T4)   — Phellis owns P1 at time T4
+    OWN(PHELLIS, P1)       — Phellis owns P1 at all times in scope
+
+The Database layer applies no special handling to time tokens; they are
+just ordinary arguments. Time-aware semantics live in the theorem layer.
+
+Whenever a concept must be treated as an object (to hang further predicates
+on it), a fresh internal symbol is generated and two propositions are
+asserted — one naming the symbol, one attaching an attribute:
+
+    ISSUE(NEW-JERSEY, S1)   — NJ has issued something called S1
+    STOCK(S1)               — S1 is a stock
+
+This is the "nominalization convention" from the original micro-Planner
+implementation and is why gen() exists in symbols.py.
+"""
+
 from collections import defaultdict
 
 

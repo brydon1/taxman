@@ -1,3 +1,27 @@
+"""
+TAXMAN Symbols — fresh symbol generation and timeline management.
+
+gen() implements the "nominalization convention": whenever TAXMAN needs to
+treat a concept as an object (so further predicates can hang off it), it
+creates a fresh unique symbol and asserts two propositions:
+
+    s1 = gen()                       # → 'PHE1'
+    db.assert_('ISSUE', 'NEW-JERSEY', s1)
+    db.assert_('STOCK', s1)
+
+The same pattern applies to ownership interests — Phellis doesn't own a
+stock class directly; he owns a *piece-of* a stock class:
+
+    p1 = gen()                       # → 'PHE2'
+    db.assert_('PIECE-OF', p1, s1)
+    db.assert_('NSHARES', p1, 100)
+    db.assert_('OWN', 'PHELLIS', p1)
+
+Timeline manages the sequence of discrete state tokens (T0, T1, T2, ...).
+Each event that changes ownership advances the timeline, and the new token
+is appended to the affected propositions so the DB preserves all states.
+"""
+
 _counter = 0
 
 

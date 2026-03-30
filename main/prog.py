@@ -1,3 +1,30 @@
+"""
+TAXMAN Prog — chained goals with backtracking.
+
+A Goal is a query against the database. Variables (strings starting with '?')
+unify with any matching value and are bound for subsequent goals in the chain:
+
+    Goal: OWN(?X, P1)       → matches OWN(PHELLIS, P1), binds X = PHELLIS
+    Goal: OWN(PHELLIS, ?X)  → matches OWN(PHELLIS, P1), binds X = P1
+    Goal: OWN(PHELLIS, P1)  → returns True/False (ground verification)
+
+A Prog is a sequence of goals that all must succeed, sharing variable bindings.
+Backtracking is implicit: when a later goal finds no matches the generator
+exhausts, the caller gets the next match from the earlier goal automatically,
+and the sequence retries. This is identical to Prolog resolution, or a set
+of nested loops where the inner loop failure causes the outer loop to advance.
+
+Example — "Phellis is a stockholder of New-Jersey":
+
+    goals = [
+        ('ISSUE', 'NEW-JERSEY', '?S'),   # bind S ← S1
+        ('STOCK', '?S'),                  # verify S1 is a stock
+        ('PIECE-OF', '?P', '?S'),         # bind P ← P1
+        ('OWN', 'PHELLIS', '?P'),         # verify Phellis owns P1
+    ]
+    # → succeeds: {'S': 'S1', 'P': 'P1'}
+"""
+
 from typing import Iterator
 
 from main.database import Database

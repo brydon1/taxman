@@ -637,7 +637,49 @@ the transaction sequence.
 
 ---
 
-## 11. Programming Language Notes
+## 11. File Layout
+
+```
+taxman/
+├── README.md                    ← project overview and usage
+├── CLAUDE.md                    ← full technical spec extracted from the paper
+├── AGENTS.md                    ← conventions and instructions for Claude Code
+├── DECISIONS.md                 ← architectural decisions log
+├── SESSIONS.md                  ← incremental build plan
+├── requirements.txt
+├── main/
+│   ├── __init__.py
+│   ├── database.py              ← Database class (assert_, erase, query)
+│   ├── prog.py                  ← prog() generator, apply_bindings()
+│   ├── symbols.py               ← gen(), Timeline
+│   ├── theorems/
+│   │   ├── __init__.py
+│   │   ├── base.py              ← ABSTRACT_THEOREMS, EXPAND_THEOREMS, goal_abstract, assert_expand
+│   │   ├── stockholder.py       ← STOCKHOLDER abstract theorem
+│   │   ├── control.py           ← CONTROL abstract theorem
+│   │   ├── trans.py             ← TRANS expand theorem
+│   │   ├── distribute.py        ← DISTRIBUTE expand theorem
+│   │   ├── b_reorg.py           ← B-REORGANIZATION abstract theorem
+│   │   ├── c_reorg.py           ← C-REORGANIZATION abstract theorem
+│   │   └── d_reorg.py           ← D-REORGANIZATION abstract theorem
+│   └── cases/
+│       ├── phellis.py           ← United States v. Phellis case data
+│       └── phellis_expected.json← ground truth for test assertions
+└── tests/
+    ├── TESTING.md               ← layer-by-layer testing strategy
+    ├── test_database.py
+    ├── test_prog.py
+    ├── test_stockholder.py
+    ├── test_control.py
+    ├── test_trans.py
+    ├── test_distribute.py
+    ├── test_b_reorg.py
+    └── test_phellis.py
+```
+
+---
+
+## 12. Programming Language Notes
 
 - Written in **micro-Planner** (a subset of Planner), itself implemented in **Lisp**.
 - Some portions written directly in Lisp.
