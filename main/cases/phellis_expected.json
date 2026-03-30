@@ -1,0 +1,7 @@
+{
+  "b_reorg_delaware_acquires_nj": false,
+  "b_reorg_nj_acquires_delaware": false,
+  "c_reorg": {"acquirer": "DELAWARE", "acquired": "NEW-JERSEY"},
+  "d_reorg_partial": {"transferor": "NEW-JERSEY", "transferee": "DELAWARE"},
+  "nj_controls_delaware_at_t2": true
+}

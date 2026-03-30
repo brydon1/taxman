@@ -1,0 +1,8 @@
+# TAXMAN — Python Dependencies
+#
+# Core implementation: Python stdlib only (no runtime dependencies).
+# See README.md — database, prog, theorems, and cases use only built-in modules.
+
+# ── Development / Testing ─────────────────────────────────────────────────────
+pytest>=8.0          # test runner (pytest tests/ -v)
+pytest-cov>=5.0      # coverage reporting (pytest --cov=taxman tests/)
