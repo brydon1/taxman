@@ -179,3 +179,34 @@ combined (one ratio check), then does the same for all non-voting classes combin
 owner held 75% would fail even if the owner's aggregate exceeded 80%. The test
 test_nonvoting_threshold_checked_in_aggregate captures the case that was incorrectly
 failing under the old code (85% of NV1 + 75% of NV2 = 80% aggregate → control).
+
+## 2026-03-29: B-REORGANIZATION locates Control first, then scans TRANS records
+Per CLAUDE.md §7.4, TAXMAN locates the Control relationship first, then searches
+backward for Acquisitions. _b_reorg_abstract calls goal_abstract(db, 'CONTROL', ...)
+as its outermost loop. This has substantive legal implications (see CLAUDE.md §7.4):
+it tends to treat a series of purchases as one reorganization. Alternative (build
+Acquisition structure first, then verify Control at end) was not implemented because
+the paper is explicit that Control-first is the current TAXMAN search order.
+
+## 2026-03-29: "Solely for voting stock" checked by counterparty pairing
+For each distinct O1 who transferred C stock to A, b_reorg.py finds every
+TRANS(A, X2, A, O1, T) and verifies X2 is a PIECE-OF a VOTING STOCK issued by A.
+Alternative considered: check all outgoing TRANS from A globally (not scoped to O1).
+Rejected because it would falsely fail B-Reorg when A made unrelated transfers
+(e.g. DISTRIBUTE to shareholders) that happen to share time context. Counterparty
+pairing confines the "solely" check to the actual exchange parties.
+
+## 2026-03-29: No consideration from A to O1 is treated as a failure
+If O1 transferred C stock to A but there is no TRANS(A, X2, A, O1, ...) in the DB,
+_b_reorg_abstract sets valid=False and continues. Rationale: B-Reorg requires an
+exchange solely for voting stock; a gift acquisition (no consideration) does not
+satisfy the statute. This is conservative — if the consideration was given outside
+the DB it would incorrectly fail, but TAXMAN's closed-world assumption means
+absent propositions are false.
+
+## 2026-03-29: _is_stock_of and _is_voting_stock_of are PIECE-OF → STOCK/ISSUE chains
+Both helpers query PIECE-OF(piece, ?S), then check STOCK(?S) and ISSUE(corp, ?S)
+(and VOTING(?S) for the voting variant). ISSUE is always 2-arg (AGENTS.md convention).
+This means a bond piece fails: BOND is asserted but not STOCK, so the check returns
+False. An asset piece also fails: no STOCK or ISSUE at all. Only genuine stock pieces
+pass — matching the statutory distinction between stock and other property in §368(a)(1)(B).
