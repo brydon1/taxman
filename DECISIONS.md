@@ -160,16 +160,6 @@ and STOCK to be asserted for the corporation, but DISTRIBUTE only needs to know 
 holds a particular stock class, not the full corporate-issuance chain; (3) this
 approach is more direct and testable without importing ABSTRACT_THEOREMS side-effects.
 
-## 2026-03-19: phellis_expected.py contains JSON despite .py extension
-The file at main/cases/phellis_expected.py is a JSON object, not Python source.
-The README.md file layout section names it phellis_expected.json (the intended name).
-Load it with open() + json.load(), not by importing. The extension mismatch is a
-naming error; do not rename without updating any test that references the path.
-README.md's code sample for db.query() at lines 146-148 also contains a related
-error: it shows a 2-arg OWN query returning both 2-arg and 3-arg results. The actual
-implementation enforces arity-matching — a 2-arg query never matches a 3-arg entry.
-Do not copy that example verbatim when writing test_phellis.py.
-
 ## 2026-03-29: CONTROL uses aggregate-within-category thresholds, not per-class
 §368(c) requires 80% of "total combined voting power" and 80% of "total number of
 shares of all other classes" — both are aggregate figures, not per-class tests.
@@ -210,3 +200,34 @@ Both helpers query PIECE-OF(piece, ?S), then check STOCK(?S) and ISSUE(corp, ?S)
 This means a bond piece fails: BOND is asserted but not STOCK, so the check returns
 False. An asset piece also fails: no STOCK or ISSUE at all. Only genuine stock pieces
 pass — matching the statutory distinction between stock and other property in §368(a)(1)(B).
+
+## 2026-04-13: D-REORGANIZATION uses owner field (not subject) to identify transferor
+TRANS(subject, X, owner, recip, T) — D-Reorg filters on `owner == A` (transferor)
+and `recip == C` (transferee). The subject is who initiates the transfer (often the
+same as owner for self-transfers, as in the Phellis NJ→DE case), but the owner field
+is who had legal title to X before the transfer. This is consistent with how TRANS
+expand works: it erases OWN(owner, X, ...) and asserts OWN(recip, X, T).
+
+## 2026-04-13: D-REORGANIZATION checks CONTROL(A, C, T) via goal_abstract
+Rather than replicating the control ratio check inline, D-Reorg delegates to
+goal_abstract(db, 'CONTROL', A, C, T). This respects the DB short-circuit
+(pre-asserted CONTROL bypasses the ratio computation) and keeps D-Reorg's logic
+focused on its own structural requirements.
+
+## 2026-04-13: D-REORGANIZATION does not check consideration from C to A
+Unlike C-Reorg and B-Reorg (both require solely-for-voting-stock), D-Reorg places
+no constraint on what consideration C gives A for the asset transfer. The statute
+focuses on the post-transfer control relationship, not the form of consideration.
+The omitted distribution requirement (§354/355) would constrain what C distributes
+to A's shareholders — explicitly out of scope per CLAUDE.md §9.
+
+## 2026-04-13: Phellis case uses two DB factories due to SPLITPIECE mutating NSHARES
+SPLITPIECE (called inside DISTRIBUTE) permanently decrements NSHARES of the source
+piece (PHE31) to 0 and adds a new PIECE-OF entry. There is no temporal history for
+NSHARES. This means the post-distribution DB shows NJ owning 0 DE common shares at T1
+(PHE31.NSHARES=0) + 500 shares owned by PHELLIS (gen_piece) — making CONTROL(NJ,
+DE, T1) fail at 66.7% < 80%.
+Solution: build_phellis_reorg_db() stops at T1 events (used for B/C/D-Reorg and
+CONTROL tests); build_phellis_db() extends it with the T2 distribution (used for
+STOCKHOLDER(PHELLIS, DE, T2) tests). test_phellis.py uses separate module-scoped
+fixtures for each.

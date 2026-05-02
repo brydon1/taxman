@@ -106,12 +106,12 @@ db.assert_('VOTING', 'TARGET-COMMON')
 alice_piece = gen()
 db.assert_('PIECE-OF', alice_piece, 'TARGET-COMMON')
 db.assert_('NSHARES', alice_piece, 90)
-db.assert_('OWN', 'ALICE', alice_piece)
+db.assert_('OWN', 'ALICE', alice_piece, 'T0')
 
 other_piece = gen()
 db.assert_('PIECE-OF', other_piece, 'TARGET-COMMON')
 db.assert_('NSHARES', other_piece, 10)
-db.assert_('OWN', 'OTHER', other_piece)
+db.assert_('OWN', 'OTHER', other_piece, 'T0')
 ```
 
 ### 2. Query for legal conclusions
