@@ -11,4 +11,4 @@
 - [X] Session 5: trans.py + distribute.py + tests.
 - [X] Session 6: b_reorg.py + tests/test_b_reorg.py.
 - [X] Sessions 7–8: One reorganization type per session (C, D).
-- [] Session 9: Load the Phellis case (main/cases/phellis.py) and run end-to-end assertions against main/cases/phellis_expected.py
+- [X] Session 9: Load the Phellis case (main/cases/phellis.py) and run end-to-end assertions against main/cases/phellis_expected.py
