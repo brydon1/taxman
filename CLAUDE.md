@@ -667,14 +667,19 @@ taxman/
 │       └── phellis_expected.json← ground truth for test assertions
 └── tests/
     ├── TESTING.md               ← layer-by-layer testing strategy
+    ├── cases
+    │   └── test_phellis.py
+    ├── theorems
+    │   ├── test_stockholder.py
+    │   ├── test_control.py
+    │   ├── test_trans.py
+    │   ├── test_distribute.py
+    │   ├── test_b_reorg.py
+    │   ├── test_c_reorg.py
+    │   ├── test_d_reorg.py
     ├── test_database.py
     ├── test_prog.py
-    ├── test_stockholder.py
-    ├── test_control.py
-    ├── test_trans.py
-    ├── test_distribute.py
-    ├── test_b_reorg.py
-    └── test_phellis.py
+    └── test_symbols.py
 ```
 
 ---
